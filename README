@@ -1,0 +1,14 @@
+Hello Reviewer,
+
+  The project is built to the requirements found at this page
+  https://gist.github.com/jeffling/2dd661ff8398726883cff09839dc316c
+
+  How I spent my time:
+       I learned a bit about working with JSON. This took most of my time.
+       I first got something working. As you can see from my commits, once I got things working, I then refactored and tested
+       I would probably redesign a bit if I had more time. I would also create more tests.
+       I made several things public when I should I made them private, this was for ease of coding.
+
+  To run,
+    1. The jar is located here in this repo, which doesn't take any arguments and the main class is TrueAccordCodingChallenge
+    2. If you want to run via a jUnit test, "TrueAccordCodingChallengeTest", it will run the main class and compare the output to what I believe it should be.
