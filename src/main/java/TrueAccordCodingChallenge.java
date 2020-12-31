@@ -24,46 +24,25 @@ public class TrueAccordCodingChallenge {
             jsonOutputInformation.id = debt.id;
             jsonOutputInformation.amount = debt.amount;
             Integer paymentPlanNumber = determinePaymentPlanNumber(debt.id, jsonData);
-            jsonOutputInformation.is_in_payment_plan = OutputInformationGetter.determineIfInPaymentPlan(paymentPlanNumber);
-            jsonOutputInformation.remaining_amount = OutputInformationGetter.determineRemainingAmount(
-                    jsonData,
-                    paymentPlanNumber,
-                    jsonOutputInformation.amount);
-            jsonOutputInformation.next_payment_due_date = determineNextPaymentDueDate(
-                    determineStartDate(debt.id, jsonData),
-                    determineMostRecentPayment(jsonData, paymentPlanNumber),
-                    determinePaymentFrequency(debt.id, jsonData),
-                    jsonOutputInformation.remaining_amount);
+            jsonOutputInformation.is_in_payment_plan =
+                    OutputInformationGetter.determineIfInPaymentPlan(paymentPlanNumber);
+            jsonOutputInformation.remaining_amount =
+                    OutputInformationGetter.determineRemainingAmount(
+                            jsonData,
+                            paymentPlanNumber,
+                            debt.amount);
+            jsonOutputInformation.next_payment_due_date =
+                    OutputInformationGetter.determineNextPaymentDueDate(
+                            determineStartDate(debt.id, jsonData),
+                            determineMostRecentPayment(jsonData, paymentPlanNumber),
+                            determinePaymentFrequency(debt.id, jsonData),
+                            jsonOutputInformation.remaining_amount);
 
             System.out.println(JSONTools.createJsonOutput(jsonOutputInformation));
 
         }
 
     }
-
-    private static boolean determineIfInPaymentPlan(Integer paymentPlanNumber) {
-        return paymentPlanNumber != null;
-    }
-
-    private static String determineNextPaymentDueDate(String startDateString, LocalDate mostRecentPayment,
-                                                      String paymentFrequency, double amountRemaining) {
-        if (startDateString == null || amountRemaining <= 0) {
-            return null;
-        }
-
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        LocalDate startDate = LocalDate.parse(startDateString, formatter);
-
-        if(mostRecentPayment.isBefore(startDate)) {
-            mostRecentPayment=startDate;
-        }
-
-        return (paymentFrequency.equals("WEEKLY")) ?
-                mostRecentPayment.plusWeeks(1).toString() : mostRecentPayment.plusWeeks(2).toString();
-
-    }
-
-
 
     private static String determinePaymentFrequency(int id, JsonData jsonData) throws IOException {
         for(Object jsonObject : jsonData.paymentPlansJsonArray) {
