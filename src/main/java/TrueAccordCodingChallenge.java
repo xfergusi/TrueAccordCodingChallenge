@@ -1,5 +1,6 @@
 
 import APIResponces.Debt;
+import APIResponces.PaymentPlan;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.json.simple.JSONArray;
 import org.json.simple.parser.JSONParser;
@@ -18,15 +19,17 @@ public class TrueAccordCodingChallenge {
         JSONParser parser = new JSONParser();
         Object obj = parser.parse(allDebptsJson);
         JSONArray array = (JSONArray)obj;
+        String paymentPlanInfo = getJsonString(
+                "https://my-json-server.typicode.com/druska/trueaccord-mock-payments-api/payment_plans");
         for(Object jsonObject : array) {
-
 
             JSONOutput jsonOutput = new JSONOutput();
             ObjectMapper om = new ObjectMapper();
             Debt debt = om.readValue((jsonObject.toString()), Debt.class);
             jsonOutput.id = debt.id;
             jsonOutput.amount = debt.amount;
-            jsonOutput.is_in_payment_plan = false;
+
+            jsonOutput.is_in_payment_plan = determineIfInPaymentPlan(debt.id, paymentPlanInfo);
             ObjectMapper mapper = new ObjectMapper();
             //Converting the Object to JSONString
             String jsonString = mapper.writeValueAsString(jsonOutput);
@@ -35,14 +38,14 @@ public class TrueAccordCodingChallenge {
         }
 
 
-        URL url2 = new URL("https://my-json-server.typicode.com/druska/trueaccord-mock-payments-api/payment_plans?debt_id=0");
-        String inline2 = "";
-        Scanner scanner2 = new Scanner(url2.openStream());
-        while (scanner2.hasNext()) {
-            inline2 += scanner2.nextLine();
-        }
-        scanner2.close();
-        System.out.println(inline2);
+//        URL url2 = new URL("https://my-json-server.typicode.com/druska/trueaccord-mock-payments-api/payment_plans?debt_id=0");
+//        String inline2 = "";
+//        Scanner scanner2 = new Scanner(url2.openStream());
+//        while (scanner2.hasNext()) {
+//            inline2 += scanner2.nextLine();
+//        }
+//        scanner2.close();
+//        System.out.println(inline2);
 
 //
 //        JSONParser parse = new JSONParser();
@@ -67,7 +70,23 @@ public class TrueAccordCodingChallenge {
 */
     }
 
-    public static String getJsonString(String urlString) throws IOException {
+    private static boolean determineIfInPaymentPlan(int id, String paymentPlanInfo) throws IOException, ParseException {
+        JSONParser parser = new JSONParser();
+        Object obj = parser.parse(paymentPlanInfo);
+        JSONArray array = (JSONArray)obj;
+        for(Object jsonObject : array) {
+            JSONOutput jsonOutput = new JSONOutput();
+            ObjectMapper om = new ObjectMapper();
+            PaymentPlan paymentPlan = om.readValue((jsonObject.toString()), PaymentPlan.class);
+            if(paymentPlan.debt_id == id) {
+                System.out.println(paymentPlan.id);
+                return true;
+            }
+        }
+       return false;
+    }
+
+    private static String getJsonString(String urlString) throws IOException {
         URL url = new URL(urlString);
         String inline = "";
         Scanner scanner = new Scanner(url.openStream());

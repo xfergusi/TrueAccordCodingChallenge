@@ -1,9 +1,10 @@
 package APIResponces;
 
-import java.time.LocalDateTime;
-
 public class PaymentPlan {
-      int payment_plan_id;
-      float amount;
-      LocalDateTime date;
+      public double amount_to_pay;
+      public int debt_id;
+      public int id;
+      public double installment_amount;
+      public String installment_frequency;
+      public String start_date;
 }
