@@ -18,10 +18,10 @@ public class TrueAccordCodingChallenge {
 
     static public void main(String[] args) throws IOException, ParseException {
 
-        String allDebptsJson = getJsonString("https://my-json-server.typicode.com/druska/trueaccord-mock-payments-api/debts");
+        String allDebtsJson = JSONTools.getJsonString("https://my-json-server.typicode.com/druska/trueaccord-mock-payments-api/debts");
 
         JSONParser parser = new JSONParser();
-        Object obj = parser.parse(allDebptsJson);
+        Object obj = parser.parse(allDebtsJson);
         JSONArray array = (JSONArray)obj;
         String paymentPlansJsonString = getJsonString(
                 "https://my-json-server.typicode.com/druska/trueaccord-mock-payments-api/payment_plans");
