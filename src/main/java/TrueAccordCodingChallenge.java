@@ -37,6 +37,9 @@ public class TrueAccordCodingChallenge {
                     paymentsInfo,
                     jsonOutputInformation.payment_plan,
                     jsonOutputInformation.amount);
+            jsonOutputInformation.next_payment_due_date = determineNextPaymentDueDate(
+                    determineStartDate(debt.id, paymentPlanInfo))
+            ;
             ObjectMapper mapper = new ObjectMapper();
             //Converting the Object to JSONString
             String jsonString = mapper.writeValueAsString(jsonOutputInformation);
@@ -44,37 +47,32 @@ public class TrueAccordCodingChallenge {
 
         }
 
+    }
 
-//        URL url2 = new URL("https://my-json-server.typicode.com/druska/trueaccord-mock-payments-api/payment_plans?debt_id=0");
-//        String inline2 = "";
-//        Scanner scanner2 = new Scanner(url2.openStream());
-//        while (scanner2.hasNext()) {
-//            inline2 += scanner2.nextLine();
-//        }
-//        scanner2.close();
-//        System.out.println(inline2);
-
-//
-//        JSONParser parse = new JSONParser();
-//        JSONObject data_obj = (JSONObject) parse.parse(inline);
-
-//        Debts debts = new Gson().fromJson(inline, Debts.class);
-
-        /*
-
-        System.out.println(con.getInputStream());
-        BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
-        String inputLine;
-        StringBuffer content = new StringBuffer();
-        while ((inputLine = in.readLine()) != null) {
-            System.out.println(inputLine);
-//            Debt debt = new Gson().fromJson(inputLine, Debt.class);
-//            content.append(debt.id +"\n");
+    private static String determineNextPaymentDueDate(String startDate)
+            throws ParseException, JsonProcessingException {
+        if (startDate == null) {
+            return null;
         }
-        in.close();
 
-        System.out.println(content);
-*/
+        System.out.println(startDate);
+
+        return "nextweek";
+
+    }
+
+    private static String determineStartDate(int id, String paymentPlanInfo) throws IOException, ParseException {
+        JSONParser parser = new JSONParser();
+        Object obj = parser.parse(paymentPlanInfo);
+        JSONArray array = (JSONArray)obj;
+        for(Object jsonObject : array) {
+            ObjectMapper om = new ObjectMapper();
+            PaymentPlan paymentPlan = om.readValue((jsonObject.toString()), PaymentPlan.class);
+            if(paymentPlan.debt_id == id) {
+                return paymentPlan.start_date;
+            }
+        }
+        return null;
     }
 
     private static Integer determineIfInPaymentPlan(int id, String paymentPlanInfo) throws IOException, ParseException {
@@ -93,14 +91,14 @@ public class TrueAccordCodingChallenge {
 
     private static String getJsonString(String urlString) throws IOException {
         URL url = new URL(urlString);
-        String inline = "";
+        StringBuilder inline = new StringBuilder();
         Scanner scanner = new Scanner(url.openStream());
         while (scanner.hasNext()) {
-            inline += scanner.nextLine();
+            inline.append(scanner.nextLine());
         }
         scanner.close();
 
-        return inline;
+        return inline.toString();
 
     }
 
@@ -121,8 +119,9 @@ public class TrueAccordCodingChallenge {
             }
         }
         return amount;
-
     }
+
+
 
 
 }
