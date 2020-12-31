@@ -24,8 +24,8 @@ public class TrueAccordCodingChallenge {
             jsonOutputInformation.id = debt.id;
             jsonOutputInformation.amount = debt.amount;
             Integer paymentPlanNumber = determinePaymentPlanNumber(debt.id, jsonData);
-            jsonOutputInformation.is_in_payment_plan = determineIfInPaymentPlan(paymentPlanNumber);
-            jsonOutputInformation.remaining_amount = determineRemainingAmount(
+            jsonOutputInformation.is_in_payment_plan = OutputInformationGetter.determineIfInPaymentPlan(paymentPlanNumber);
+            jsonOutputInformation.remaining_amount = OutputInformationGetter.determineRemainingAmount(
                     jsonData,
                     paymentPlanNumber,
                     jsonOutputInformation.amount);
@@ -40,9 +40,11 @@ public class TrueAccordCodingChallenge {
         }
 
     }
+
     private static boolean determineIfInPaymentPlan(Integer paymentPlanNumber) {
         return paymentPlanNumber != null;
     }
+
     private static String determineNextPaymentDueDate(String startDateString, LocalDate mostRecentPayment,
                                                       String paymentFrequency, double amountRemaining) {
         if (startDateString == null || amountRemaining <= 0) {
@@ -115,23 +117,6 @@ public class TrueAccordCodingChallenge {
         }
        return null;
     }
-
-    private static double determineRemainingAmount(JsonData jsonData, Integer paymentPlanId, double amount)
-            throws JsonProcessingException {
-        if(paymentPlanId == null) {
-            return amount;
-        }
-        for(Object jsonObject : jsonData.paymentsJsonArray) {
-            ObjectMapper om = new ObjectMapper();
-            Payment payment = om.readValue((jsonObject.toString()), Payment.class);
-            if(payment.payment_plan_id == paymentPlanId) {
-                amount -= payment.amount;
-            }
-        }
-        return amount;
-    }
-
-
 
 
 }
