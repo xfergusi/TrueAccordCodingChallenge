@@ -35,9 +35,7 @@ public class TrueAccordCodingChallenge {
                     determinePaymentFrequency(debt.id, jsonData),
                     jsonOutputInformation.remaining_amount);
 
-            ObjectMapper mapper = new ObjectMapper();
-            String jsonString = mapper.writeValueAsString(jsonOutputInformation);
-            System.out.println(jsonString);
+            System.out.println(JSONTools.createJsonOutput(jsonOutputInformation));
 
         }
 

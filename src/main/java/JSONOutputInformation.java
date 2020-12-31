@@ -5,5 +5,4 @@ public class JSONOutputInformation {
     public double remaining_amount;
     public String next_payment_due_date;
 
-
 }
