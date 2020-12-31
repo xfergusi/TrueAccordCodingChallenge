@@ -1,6 +1,8 @@
 
 import APIResponces.Debt;
+import APIResponces.Payment;
 import APIResponces.PaymentPlan;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.json.simple.JSONArray;
 import org.json.simple.parser.JSONParser;
@@ -21,18 +23,23 @@ public class TrueAccordCodingChallenge {
         JSONArray array = (JSONArray)obj;
         String paymentPlanInfo = getJsonString(
                 "https://my-json-server.typicode.com/druska/trueaccord-mock-payments-api/payment_plans");
+        String paymentsInfo = getJsonString(
+                "https://my-json-server.typicode.com/druska/trueaccord-mock-payments-api/payments");
         for(Object jsonObject : array) {
 
-            JSONOutput jsonOutput = new JSONOutput();
+            JSONOutputInformation jsonOutputInformation = new JSONOutputInformation();
             ObjectMapper om = new ObjectMapper();
             Debt debt = om.readValue((jsonObject.toString()), Debt.class);
-            jsonOutput.id = debt.id;
-            jsonOutput.amount = debt.amount;
-
-            jsonOutput.is_in_payment_plan = determineIfInPaymentPlan(debt.id, paymentPlanInfo);
+            jsonOutputInformation.id = debt.id;
+            jsonOutputInformation.amount = debt.amount;
+            jsonOutputInformation.payment_plan = determineIfInPaymentPlan(debt.id, paymentPlanInfo);
+            jsonOutputInformation.remaining_amount = determineRemainingAmount(
+                    paymentsInfo,
+                    jsonOutputInformation.payment_plan,
+                    jsonOutputInformation.amount);
             ObjectMapper mapper = new ObjectMapper();
             //Converting the Object to JSONString
-            String jsonString = mapper.writeValueAsString(jsonOutput);
+            String jsonString = mapper.writeValueAsString(jsonOutputInformation);
             System.out.println(jsonString);
 
         }
@@ -70,20 +77,18 @@ public class TrueAccordCodingChallenge {
 */
     }
 
-    private static boolean determineIfInPaymentPlan(int id, String paymentPlanInfo) throws IOException, ParseException {
+    private static Integer determineIfInPaymentPlan(int id, String paymentPlanInfo) throws IOException, ParseException {
         JSONParser parser = new JSONParser();
         Object obj = parser.parse(paymentPlanInfo);
         JSONArray array = (JSONArray)obj;
         for(Object jsonObject : array) {
-            JSONOutput jsonOutput = new JSONOutput();
             ObjectMapper om = new ObjectMapper();
             PaymentPlan paymentPlan = om.readValue((jsonObject.toString()), PaymentPlan.class);
             if(paymentPlan.debt_id == id) {
-                System.out.println(paymentPlan.id);
-                return true;
+                return paymentPlan.id;
             }
         }
-       return false;
+       return null;
     }
 
     private static String getJsonString(String urlString) throws IOException {
@@ -94,10 +99,30 @@ public class TrueAccordCodingChallenge {
             inline += scanner.nextLine();
         }
         scanner.close();
-        System.out.println(inline);
 
         return inline;
 
     }
+
+
+    private static double determineRemainingAmount(String paymentsInfo, Integer paymentPlan, double amount)
+            throws ParseException, JsonProcessingException {
+        if(paymentPlan == null) {
+            return amount;
+        }
+        JSONParser parser = new JSONParser();
+        Object obj = parser.parse(paymentsInfo);
+        JSONArray array = (JSONArray)obj;
+        for(Object jsonObject : array) {
+            ObjectMapper om = new ObjectMapper();
+            Payment payment = om.readValue((jsonObject.toString()), Payment.class);
+            if(payment.payment_plan_id == paymentPlan) {
+                amount -= payment.amount;
+            }
+        }
+        return amount;
+
+    }
+
 
 }
