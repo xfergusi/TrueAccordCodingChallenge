@@ -9,6 +9,16 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
+/**
+ * The class is built to the requirement found at this page
+ * https://gist.github.com/jeffling/2dd661ff8398726883cff09839dc316c
+ *
+ * How I spent my time:
+ *      I learned a bit about working with JSON. This took most of my time.
+ *      I first got something working. As you can see from my commits, once I got things working, I then refactored and tested
+ *      I would probably redesign a bit if I had more time. I would also create more tests.
+ *      I made several things public when I should I made them private, this was for ease of coding.
+ */
 public class TrueAccordCodingChallenge {
 
     static public void main(String[] args) throws IOException, ParseException {

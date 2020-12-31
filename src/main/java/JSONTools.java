@@ -8,6 +8,9 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.Scanner;
 
+/**
+ * This class contains utility methods used to help work with json objects
+ */
 public final class JSONTools {
 
     public static JSONArray createJsonArray(String urlString) throws IOException, ParseException {
