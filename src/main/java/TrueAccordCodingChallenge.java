@@ -11,7 +11,6 @@ import org.json.simple.parser.ParseException;
 import java.io.IOException;
 import java.net.URL;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Scanner;
 
@@ -35,35 +34,33 @@ public class TrueAccordCodingChallenge {
             Debt debt = om.readValue((jsonObject.toString()), Debt.class);
             jsonOutputInformation.id = debt.id;
             jsonOutputInformation.amount = debt.amount;
-            jsonOutputInformation.payment_plan = determineIfInPaymentPlan(debt.id, paymentPlansJsonString);
+            Integer paymentPlanNumber = determinePaymentPlanNumber(debt.id, paymentPlansJsonString);
+            jsonOutputInformation.is_in_payment_plan = determineIfInPaymentPlan(paymentPlanNumber);
             jsonOutputInformation.remaining_amount = determineRemainingAmount(
                     paymentsJsonString,
-                    jsonOutputInformation.payment_plan,
+                    paymentPlanNumber,
                     jsonOutputInformation.amount);
             jsonOutputInformation.next_payment_due_date = determineNextPaymentDueDate(
                     determineStartDate(debt.id, paymentPlansJsonString),
-                    determineMostRecentPayment(paymentsJsonString, jsonOutputInformation.payment_plan),
-                    determinePaymentFrequency(debt.id, paymentPlansJsonString))
-            ;
+                    determineMostRecentPayment(paymentsJsonString, paymentPlanNumber),
+                    determinePaymentFrequency(debt.id, paymentPlansJsonString),
+                    jsonOutputInformation.remaining_amount);
+
             ObjectMapper mapper = new ObjectMapper();
-            //Converting the Object to JSONString
             String jsonString = mapper.writeValueAsString(jsonOutputInformation);
             System.out.println(jsonString);
 
         }
 
     }
-
-    private static String determineNextPaymentDueDate(String startDateString, LocalDate mostRecentPayment, String paymentFrequency)
-            throws ParseException, JsonProcessingException {
-        if (startDateString == null) {
+    private static boolean determineIfInPaymentPlan(Integer paymentPlanNumber) {
+        return paymentPlanNumber != null;
+    }
+    private static String determineNextPaymentDueDate(String startDateString, LocalDate mostRecentPayment,
+                                                      String paymentFrequency, double amountRemaining) {
+        if (startDateString == null || amountRemaining <= 0) {
             return null;
         }
-
-        System.out.println(startDateString);
-        System.out.println(mostRecentPayment);
-        System.out.println(paymentFrequency);
-
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         LocalDate startDate = LocalDate.parse(startDateString, formatter);
@@ -130,7 +127,7 @@ public class TrueAccordCodingChallenge {
         return null;
     }
 
-    private static Integer determineIfInPaymentPlan(int id, String paymentPlanInfo) throws IOException, ParseException {
+    private static Integer determinePaymentPlanNumber(int id, String paymentPlanInfo) throws IOException, ParseException {
         JSONParser parser = new JSONParser();
         Object obj = parser.parse(paymentPlanInfo);
         JSONArray array = (JSONArray)obj;
