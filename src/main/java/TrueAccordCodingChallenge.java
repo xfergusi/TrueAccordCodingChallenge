@@ -2,32 +2,21 @@
 import APIResponces.Debt;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 import java.io.IOException;
-import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.Iterator;
 import java.util.Scanner;
 
 public class TrueAccordCodingChallenge {
 
     static public void main(String[] args) throws IOException, ParseException {
-        URL url = new URL("https://my-json-server.typicode.com/druska/trueaccord-mock-payments-api/debts");
-        String inline = "";
-        Scanner scanner = new Scanner(url.openStream());
-        while (scanner.hasNext()) {
-            inline += scanner.nextLine();
-        }
-        scanner.close();
-        System.out.println(inline);
 
-
+        String allDebptsJson = getJsonString("https://my-json-server.typicode.com/druska/trueaccord-mock-payments-api/debts");
 
         JSONParser parser = new JSONParser();
-        Object obj = parser.parse(inline);
+        Object obj = parser.parse(allDebptsJson);
         JSONArray array = (JSONArray)obj;
         for(Object jsonObject : array) {
 
@@ -76,6 +65,20 @@ public class TrueAccordCodingChallenge {
 
         System.out.println(content);
 */
+    }
+
+    public static String getJsonString(String urlString) throws IOException {
+        URL url = new URL(urlString);
+        String inline = "";
+        Scanner scanner = new Scanner(url.openStream());
+        while (scanner.hasNext()) {
+            inline += scanner.nextLine();
+        }
+        scanner.close();
+        System.out.println(inline);
+
+        return inline;
+
     }
 
 }
