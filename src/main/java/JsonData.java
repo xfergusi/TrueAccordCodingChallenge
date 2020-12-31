@@ -1,14 +1,21 @@
+import org.json.simple.JSONArray;
+import org.json.simple.parser.ParseException;
+
 import java.io.IOException;
 
 public class JsonData {
-    public String paymentPlansJsonString;
-    public String paymentsJsonString;
 
-    public JsonData() throws IOException {
-        paymentPlansJsonString = JSONTools.getJsonString(
+    public JSONArray paymentPlansJsonArray;
+    public JSONArray paymentsJsonArray;
+    public JSONArray DebtsJsonArray;
+
+    public JsonData() throws IOException, ParseException {
+        this.paymentPlansJsonArray = JSONTools.createJsonArray(
                 "https://my-json-server.typicode.com/druska/trueaccord-mock-payments-api/payment_plans");
-        paymentsJsonString = JSONTools.getJsonString(
+        this.paymentsJsonArray = JSONTools.createJsonArray(
                 "https://my-json-server.typicode.com/druska/trueaccord-mock-payments-api/payments");
-
+        this.DebtsJsonArray = JSONTools.createJsonArray(
+                "https://my-json-server.typicode.com/druska/trueaccord-mock-payments-api/debts");
     }
+
 }

@@ -8,9 +8,10 @@ import java.util.Scanner;
 
 public final class JSONTools {
 
-    public static JSONArray getJsonArray(String JsonString) throws ParseException {
+    public static JSONArray createJsonArray(String urlString) throws IOException, ParseException {
+        String jsonDataString = JSONTools.getJsonString(urlString);
         JSONParser parser = new JSONParser();
-        Object obj = parser.parse(JsonString);
+        Object obj = parser.parse(jsonDataString);
         return (JSONArray)obj;
     }
 
